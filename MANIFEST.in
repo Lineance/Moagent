@@ -1,0 +1,17 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements*.txt
+include pyproject.toml
+include setup.py
+
+recursive-include moagent *.yaml *.yml *.json
+recursive-include configs *.yaml *.yml *.json
+recursive-include configs/patterns *.yaml *.yml
+recursive-include web_app *.py *.html *.css *.js
+
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*

@@ -33,6 +33,8 @@ venv.bak/
 configs/
 data/
 
+.claude
+
 # IDE
 .vscode/
 .idea/

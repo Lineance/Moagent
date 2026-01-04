@@ -1,0 +1,37 @@
+# MoAgent Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# ============================================================================
+# Testing
+# ============================================================================
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.12.0
+pytest-xdist>=3.5.0  # parallel test execution
+responses>=0.24.0    # mock HTTP responses
+freezegun>=1.4.0     # time mocking
+
+# ============================================================================
+# Code Quality
+# ============================================================================
+black>=23.0.0        # code formatting
+ruff>=0.1.0          # linting (fast alternative to flake8, isort, etc.)
+mypy>=1.7.0          # type checking
+pre-commit>=3.6.0    # git hooks
+
+# ============================================================================
+# Documentation
+# ============================================================================
+sphinx>=7.0.0
+sphinx-rtd-theme>=2.0.0
+sphinx-autodoc-typehints>=2.0.0
+
+# ============================================================================
+# Additional Tools
+# ============================================================================
+tox>=4.11.0          # test automation
+ipython>=8.0.0       # enhanced REPL
+ipdb>=0.13.0         # enhanced debugger

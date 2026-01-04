@@ -1,0 +1,20 @@
+# MoAgent - All Dependencies
+# Install with: pip install -r requirements-all.txt
+# This includes all optional dependencies
+
+-r requirements.txt
+-r requirements-dev.txt
+-r requirements-test.txt
+-r requirements-web.txt
+
+# ============================================================================
+# Database Support
+# ============================================================================
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+
+# ============================================================================
+# Additional Optional Features
+# ============================================================================
+redis>=5.0.0
+celery>=5.3.0
