@@ -37,25 +37,32 @@ moagent/                      # Main package
 └── rate_limiter.py           # Rate limiting utilities
 
 moagent/agents/               # Agent system
-├── __init__.py
-├── coordinator.py           # LangGraph workflow coordinator
-├── rag_coordinator.py       # RAG-enabled coordinator
-├── multi_agent/             # Multi-agent collaboration
-│   ├── __init__.py
-│   ├── base.py             # Base agent class
-│   ├── communication.py    # Agent communication
-│   ├── message.py          # Message types
-│   └── workflow/           # Workflow definitions
-│       ├── __init__.py
-│       ├── graph.py        # LangGraph workflow graph
-│       └── adaptive.py     # Adaptive workflow
-└── pattern_generator/       # Pattern generation
-    ├── __init__.py
-    ├── basic_list_pattern_generator.py
-    ├── html_downloader.py
-    ├── llm_pattern_comparator.py
-    ├── llm_pattern_generator.py
-    └── llm_pattern_refiner.py
+├── __init__.py              # Agent package initialization
+├── coordinator.py           # LangGraph workflow coordinator - Main orchestration
+├── rag_coordinator.py       # RAG-enabled coordinator - Pattern learning integration
+├── multi_agent/             # Multi-agent collaboration system
+│   ├── __init__.py         # Multi-agent package initialization
+│   ├── base.py            # BaseAgent abstract class - Core agent interface
+│   ├── communication.py   # AgentCommunication - Message passing between agents
+│   ├── message.py         # Message types and data structures
+│   ├── workflow/          # Workflow orchestration
+│   │   ├── __init__.py   # Workflow package initialization
+│   │   ├── graph.py      # LangGraph workflow graph definition
+│   │   └── adaptive.py   # Adaptive workflow with dynamic routing
+│   └── agents/           # Specialized agent implementations
+│       ├── __init__.py   # Agents package initialization
+│       ├── supervisor.py # SupervisorAgent - Task decomposition and scheduling
+│       ├── explorer.py   # ExplorerAgent - Web exploration and discovery
+│       ├── analyst.py    # AnalystAgent - Data analysis and extraction
+│       ├── optimizer.py  # OptimizerAgent - Performance optimization
+│       └── validator.py  # ValidatorAgent - Result validation and QA
+└── pattern_generator/      # Pattern generation and refinement
+    ├── __init__.py                     # Pattern generator package initialization
+    ├── basic_list_pattern_generator.py # Rule-based pattern generation
+    ├── html_downloader.py              # HTML content downloader
+    ├── llm_pattern_generator.py        # LLM-powered pattern analysis
+    ├── llm_pattern_comparator.py       # Pattern comparison and evaluation
+    └── llm_pattern_refiner.py          # Pattern refinement with feedback
 
 moagent/crawlers/            # Web crawling system
 ├── __init__.py
