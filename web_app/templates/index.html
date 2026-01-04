@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoAgent - 智能爬虫系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🕷️ MoAgent</h1>
+            <p class="subtitle">LangGraph-based Intelligent News Crawling System</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="nav-link active">首页</a>
+            <a href="{{ url_for('crawl_page') }}" class="nav-link">爬虫</a>
+            <a href="{{ url_for('rag_page') }}" class="nav-link">RAG系统</a>
+            <a href="{{ url_for('multi_agent_page') }}" class="nav-link">Multi-Agent</a>
+            <a href="{{ url_for('dashboard') }}" class="nav-link">监控</a>
+            <a href="{{ url_for('storage_page') }}" class="nav-link">存储</a>
+            <a href="{{ url_for('config_page') }}" class="nav-link">配置</a>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h2>欢迎使用 MoAgent</h2>
+            <p>基于 LangGraph 的智能新闻爬虫系统，支持 RAG 增强和多 Agent 协作</p>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🕷️</div>
+                    <h3>智能爬虫</h3>
+                    <p>支持静态、动态、RSS等多种模式</p>
+                    <a href="{{ url_for('crawl_page') }}" class="btn">开始使用</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>RAG增强</h3>
+                    <p>向量数据库 + 语义搜索</p>
+                    <a href="{{ url_for('rag_page') }}" class="btn">查看详情</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Multi-Agent协作</h3>
+                    <p>Explorer, Analyst, Optimizer, Validator</p>
+                    <a href="{{ url_for('multi_agent_page') }}" class="btn">开始协作</a>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>实时监控</h3>
+                    <p>性能统计和任务监控</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn">查看监控</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Info -->
+        <section class="info-section">
+            <h3>系统信息</h3>
+            <div id="system-info" class="info-grid">
+                <div class="info-card">
+                    <h4>系统版本</h4>
+                    <p id="version">加载中...</p>
+                </div>
+                <div class="info-card">
+                    <h4>功能状态</h4>
+                    <ul id="features">
+                        <li>加载中...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="stats-section">
+            <h3>快速统计</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>已爬取</h4>
+                    <p id="total-crawled" class="stat-number">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>RAG模式</h4>
+                    <p id="rag-patterns" class="stat-number">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>存储大小</h4>
+                    <p id="storage-size" class="stat-number">-</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 MoAgent. Powered by LangGraph & LangChain</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

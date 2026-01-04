@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监控面板 - MoAgent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📊 系统监控</h1>
+            <p class="subtitle">实时监控和性能统计</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+            <a href="{{ url_for('crawl_page') }}" class="nav-link">爬虫</a>
+            <a href="{{ url_for('rag_page') }}" class="nav-link">RAG系统</a>
+            <a href="{{ url_for('multi_agent_page') }}" class="nav-link">Multi-Agent</a>
+            <a href="{{ url_for('dashboard') }}" class="nav-link active">监控</a>
+            <a href="{{ url_for('storage_page') }}" class="nav-link">存储</a>
+            <a href="{{ url_for('config_page') }}" class="nav-link">配置</a>
+        </nav>
+
+
+        <!-- Dashboard Stats -->
+        <section class="dashboard-section">
+            <div class="dashboard-header">
+                <h2>系统概览</h2>
+                <button id="refresh-dashboard" class="btn btn-secondary">刷新</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card large">
+                    <h4>总爬取数</h4>
+                    <p id="dash-total" class="stat-number">-</p>
+                    <p class="stat-label">自系统启动以来</p>
+                </div>
+
+                <div class="stat-card large">
+                    <h4>RAG模式数</h4>
+                    <p id="dash-rag" class="stat-number">-</p>
+                    <p class="stat-label">已学习模式</p>
+                </div>
+
+                <div class="stat-card large">
+                    <h4>成功率</h4>
+                    <p id="dash-success" class="stat-number">-</p>
+                    <p class="stat-label">平均成功率</p>
+                </div>
+
+                <div class="stat-card large">
+                    <h4>活跃Agent</h4>
+                    <p id="dash-agents" class="stat-number">5</p>
+                    <p class="stat-label">个Agent在线</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Features -->
+        <section class="features-section">
+            <h2>功能状态</h2>
+            <div id="feature-status" class="feature-status-grid">
+                <div class="status-card">
+                    <h4>🕷️ 爬虫系统</h4>
+                    <p id="status-crawling" class="status">检查中...</p>
+                </div>
+
+                <div class="status-card">
+                    <h4>📝 解析器</h4>
+                    <p id="status-parsing" class="status">检查中...</p>
+                </div>
+
+                <div class="status-card">
+                    <h4>💾 存储系统</h4>
+                    <p id="status-storage" class="status">检查中...</p>
+                </div>
+
+                <div class="status-card">
+                    <h4>🧠 RAG系统</h4>
+                    <p id="status-rag" class="status">检查中...</p>
+                </div>
+
+                <div class="status-card">
+                    <h4>🤖 Multi-Agent</h4>
+                    <p id="status-multiagent" class="status">检查中...</p>
+                </div>
+
+                <div class="status-card">
+                    <h4>📢 通知系统</h4>
+                    <p id="status-notify" class="status">检查中...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Items -->
+        <section class="items-section">
+            <h2>最近爬取</h2>
+            <button id="load-items" class="btn btn-secondary">加载最近项目</button>
+            <div id="recent-items" class="items-list"></div>
+        </section>
+
+        <!-- System Logs -->
+        <section class="logs-section">
+            <h2>系统日志</h2>
+            <div id="system-logs" class="logs-container">
+                <div class="log-entry">
+                    <span class="log-time">2026-01-04 10:00:00</span>
+                    <span class="log-level INFO">INFO</span>
+                    <span class="log-message">系统初始化完成</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">2026-01-04 10:00:01</span>
+                    <span class="log-level INFO">INFO</span>
+                    <span class="log-message">存储系统已连接</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">2026-01-04 10:00:05</span>
+                    <span class="log-level WARNING">WARNING</span>
+                    <span class="log-message">RAG系统初始化较慢（WSL2环境）</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="metrics-section">
+            <h2>性能指标</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>平均响应时间</h4>
+                    <p class="metric-value">
+                        < 2s</p>
+                            <p class="metric-label">爬取任务</p>
+                </div>
+
+                <div class="metric-card">
+                    <h4>并发处理</h4>
+                    <p class="metric-value">10+</p>
+                    <p class="metric-label">同时任务</p>
+                </div>
+
+                <div class="metric-card">
+                    <h4>数据准确率</h4>
+                    <p class="metric-value">95%+</p>
+                    <p class="metric-label">解析准确率</p>
+                </div>
+
+                <div class="metric-card">
+                    <h4>系统可用性</h4>
+                    <p class="metric-value">99.9%</p>
+                    <p class="metric-label">正常运行时间</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>

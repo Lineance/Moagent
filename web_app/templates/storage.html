@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>存储查看器 - MoAgent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .storage-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .control-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .article-header {
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-meta {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .article-source {
+            padding: 4px 10px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+
+        .article-content {
+            padding: 15px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-footer {
+            padding: 12px 15px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .article-link:hover {
+            text-decoration: underline;
+        }
+
+        .article-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>📦 存储查看器</h1>
+            <p class="subtitle">浏览数据库中存储的所有文章</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+        <a href="{{ url_for('crawl_page') }}" class="nav-link">爬虫</a>
+        <a href="{{ url_for('rag_page') }}" class="nav-link">RAG系统</a>
+        <a href="{{ url_for('multi_agent_page') }}" class="nav-link">Multi-Agent</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-link">监控</a>
+        <a href="{{ url_for('storage_page') }}" class="nav-link active">存储</a>
+        <a href="{{ url_for('config_page') }}" class="nav-link">配置</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Controls -->
+        <div class="storage-controls">
+            <div class="control-row">
+                <label>
+                    显示数量:
+                    <select id="limit-select" class="form-select">
+                        <option value="20">20条</option>
+                        <option value="50" selected>50条</option>
+                        <option value="100">100条</option>
+                        <option value="all">全部</option>
+                    </select>
+                </label>
+
+                <label>
+                    来源过滤:
+                    <select id="source-filter" class="form-select">
+                        <option value="">全部来源</option>
+                    </select>
+                </label>
+
+                <button id="refresh-btn" class="btn btn-primary">🔄 刷新</button>
+                <button id="export-btn" class="btn btn-secondary">📥 导出JSON</button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div id="stats-container" class="stats-summary">
+            <div class="stat-box">
+                <div class="stat-value" id="stat-total">-</div>
+                <div class="stat-label">总文章数</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-sources">-</div>
+                <div class="stat-label">来源数量</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-recent">-</div>
+                <div class="stat-label">最近更新</div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading-spinner">
+            <p>⏳ 加载中...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📭</div>
+            <h2>暂无数据</h2>
+            <p>数据库中还没有存储的文章</p>
+            <a href="{{ url_for('crawl_page') }}" class="btn btn-primary" style="margin-top: 20px;">
+                开始爬取
+            </a>
+        </div>
+
+        <!-- Articles Grid -->
+        <div id="articles-grid" class="articles-grid"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 MoAgentcopy; 2026 MoAgent - 智能爬虫系统</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/storage.js') }}"></script>
+</body>
+
+</html>

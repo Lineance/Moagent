@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爬虫 - MoAgent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🕷️ 智能爬虫</h1>
+            <p class="subtitle">支持多种爬取模式的智能爬虫系统</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+            <a href="{{ url_for('crawl_page') }}" class="nav-link active">爬虫</a>
+            <a href="{{ url_for('rag_page') }}" class="nav-link">RAG系统</a>
+            <a href="{{ url_for('multi_agent_page') }}" class="nav-link">Multi-Agent</a>
+            <a href="{{ url_for('dashboard') }}" class="nav-link">监控</a>
+            <a href="{{ url_for('storage_page') }}" class="nav-link">存储</a>
+            <a href="{{ url_for('config_page') }}" class="nav-link">配置</a>
+        </nav>
+
+        <!-- Crawling Form -->
+        <section class="form-section">
+            <h2>开始爬取</h2>
+            <form id="crawl-form" class="crawl-form">
+                <div class="form-group">
+                    <label for="url">目标URL *</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com" required class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mode">爬取模式</label>
+                        <select id="mode" name="mode" class="form-select">
+                            <option value="auto">自动 (推荐)</option>
+                            <option value="static">静态页面</option>
+                            <option value="dynamic">动态页面</option>
+                            <option value="rss">RSS订阅</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="depth">爬取深度</label>
+                        <input type="number" id="depth" name="depth" min="1" max="5" value="1" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="use-rag" name="use_rag">
+                        <span>使用RAG增强模式 (推荐)</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    开始爬取
+                </button>
+            </form>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="results-section" style="display: none;">
+            <h2>爬取结果</h2>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>正在爬取，请稍候...</p>
+            </div>
+
+            <div id="results-content" style="display: none;">
+                <div class="results-summary">
+                    <div class="summary-card">
+                        <h3>爬取统计</h3>
+                        <ul>
+                            <li>爬取数量: <strong id="crawled-count">-</strong></li>
+                            <li>解析数量: <strong id="parsed-count">-</strong></li>
+                            <li>存储数量: <strong id="stored-count">-</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="results-list">
+                    <h3>爬取内容 (前10条)</h3>
+                    <div id="items-list"></div>
+                </div>
+            </div>
+
+            <div id="error-content" class="error-content" style="display: none;">
+                <h3>❌ 错误</h3>
+                <pre id="error-message"></pre>
+            </div>
+        </section>
+
+        <!-- AI Pattern Generator -->
+        <section class="form-section" id="pattern-generator">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>🤖 智能模式生成器</h2>
+                <button id="toggle-generator" class="btn btn-secondary">展开/收起</button>
+            </div>
+
+            <div id="generator-content" style="display: none;">
+                <!-- Step 1: Input HTML -->
+                <div class="generator-step">
+                    <h3>步骤 1: 提供网页HTML</h3>
+
+                    <div class="form-group">
+                        <label>方法A: 粘贴HTML源代码</label>
+                        <textarea id="html-input" rows="8" class="form-input" placeholder="在此粘贴网页HTML源代码..."></textarea>
+                    </div>
+
+                    <div style="text-align: center; margin: 20px 0;">— 或 —</div>
+
+                    <div class="form-group">
+                        <label>方法B: 提供URL (自动获取HTML)</label>
+                        <div class="form-row">
+                            <input type="url" id="pattern-url" class="form-input" placeholder="https://example.com">
+                            <button id="fetch-html-btn" class="btn btn-secondary">
+                                📥 获取HTML
+                            </button>
+                        </div>
+                        <small class="text-secondary">注意: 某些网站可能无法直接获取HTML</small>
+                    </div>
+
+                    <button id="generate-pattern-btn" class="btn btn-primary" style="margin-top: 15px;">
+                        🤖 生成爬取模式
+                    </button>
+
+                    <!-- Error Display -->
+                    <div id="generate-error" class="error-message-box" style="display: none; margin-top: 15px;">
+                        <h4 style="color: #d32f2f;">❌ 错误</h4>
+                        <pre id="generate-error-text" style="background: #ffebee; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
+                    </div>
+                </div>
+
+                <!-- Step 2: Generated Pattern -->
+                <div id="generated-pattern-section" class="generator-step" style="display: none;">
+                    <h3>步骤 2: 生成的模式</h3>
+
+                    <div id="pattern-display" class="pattern-display">
+                        <!-- Pattern will be displayed here -->
+                    </div>
+
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button id="test-pattern-btn" class="btn btn-secondary">
+                            🧪 测试模式
+                        </button>
+                        <button id="refine-btn" class="btn btn-warning">
+                            ⚡ 优化模式
+                        </button>
+                        <button id="apply-pattern-btn" class="btn btn-success">
+                            ✅ 应用并爬取
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Test Results -->
+                <div id="test-results-section" class="generator-step" style="display: none;">
+                    <h3>步骤 3: 测试结果</h3>
+
+                    <div id="test-stats" class="test-stats">
+                        <!-- Test statistics will be displayed here -->
+                    </div>
+
+                    <div id="extracted-items" class="extracted-items">
+                        <h4>提取的项目预览 (前5条)</h4>
+                        <div id="items-preview"></div>
+                    </div>
+
+                    <!-- Error Display -->
+                    <div id="test-error" class="error-message-box" style="display: none; margin-top: 15px;">
+                        <h4 style="color: #d32f2f;">❌ 测试错误</h4>
+                        <pre id="test-error-text" style="background: #ffebee; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
+                    </div>
+                </div>
+
+                <!-- Step 4: Refinement -->
+                <div id="refine-section" class="generator-step" style="display: none;">
+                    <h3>步骤 4: 优化模式</h3>
+
+                    <div class="form-group">
+                        <label for="feedback-input">提供反馈以优化模式:</label>
+                        <textarea id="feedback-input" rows="3" class="form-input"
+                            placeholder="例如: 包含了导航链接，需要排除 / 漏掉了一些文章 / 标题不准确..."></textarea>
+                    </div>
+
+                    <div class="feedback-suggestions">
+                        <p><strong>常用反馈示例:</strong></p>
+                        <button class="feedback-btn btn-sm" data-feedback="包含了导航链接和菜单项，需要排除">排除导航</button>
+                        <button class="feedback-btn btn-sm" data-feedback="漏掉了一些文章，请扩大搜索范围">扩大范围</button>
+                        <button class="feedback-btn btn-sm" data-feedback="抓取了很多不相关的内容，需要更精确的选择器">提高精度</button>
+                        <button class="feedback-btn btn-sm" data-feedback="日期提取不准确，需要修复日期选择器">修复日期</button>
+                    </div>
+
+                    <button id="submit-refine-btn" class="btn btn-primary" style="margin-top: 15px;">
+                        ⚡ 提交优化
+                    </button>
+
+                    <!-- Error Display -->
+                    <div id="refine-error" class="error-message-box" style="display: none; margin-top: 15px;">
+                        <h4 style="color: #d32f2f;">❌ 优化错误</h4>
+                        <pre id="refine-error-text" style="background: #ffebee; padding: 10px; border-radius: 4px; overflow-x: auto;"></pre>
+                    </div>
+
+                    <div id="refine-results" style="display: none; margin-top: 15px;">
+                        <!-- Refinement results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Storage Stats -->
+        <section class="stats-section">
+            <h2>存储统计</h2>
+            <button id="refresh-stats" class="btn btn-secondary">刷新统计</button>
+            <div id="storage-stats" class="stats-grid">
+                <div class="stat-card">
+                    <h4>总项目数</h4>
+                    <p id="stat-total" class="stat-number">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>最新项目</h4>
+                    <p id="stat-latest" class="stat-number">-</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+
+
+    <style>
+        /* Pattern Generator Styles */
+        .generator-step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .pattern-display {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .pattern-field {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .pattern-field label {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .pattern-field code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-color);
+        }
+
+        .test-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .test-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .test-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .extracted-items {
+            margin-top: 20px;
+        }
+
+        .item-preview {
+            background: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .item-preview-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-preview-url {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .feedback-suggestions {
+            margin-top: 10px;
+        }
+
+        .feedback-btn {
+            margin: 5px;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            transition: width 0.3s;
+        }
+
+        .improvement-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .improvement-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .improvement-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .improvement-low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/crawl.js') }}"></script>
+</body>
+
+</html>

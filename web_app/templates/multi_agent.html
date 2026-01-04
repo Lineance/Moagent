@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent协作 - MoAgent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🤖 Multi-Agent协作系统</h1>
+            <p class="subtitle">基于LangGraph的智能Agent工作流</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+            <a href="{{ url_for('crawl_page') }}" class="nav-link">爬虫</a>
+            <a href="{{ url_for('rag_page') }}" class="nav-link">RAG系统</a>
+            <a href="{{ url_for('multi_agent_page') }}" class="nav-link active">Multi-Agent</a>
+            <a href="{{ url_for('dashboard') }}" class="nav-link">监控</a>
+            <a href="{{ url_for('storage_page') }}" class="nav-link">存储</a>
+            <a href="{{ url_for('config_page') }}" class="nav-link">配置</a>
+        </nav>
+
+        <!-- Agent Workflow -->
+        <section class="workflow-section">
+            <h2>Agent工作流</h2>
+            <div class="workflow-diagram">
+                <div class="workflow-step">
+                    <div class="step-icon">🔍</div>
+                    <h3>Explorer Agent</h3>
+                    <p>探索网站结构，检测JS、分页等</p>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step">
+                    <div class="step-icon">⚡</div>
+                    <h3>Optimizer Agent</h3>
+                    <p>使用RAG优化爬取模式</p>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step">
+                    <div class="step-icon">🕷️</div>
+                    <h3>Crawler</h3>
+                    <p>执行实际爬取</p>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step">
+                    <div class="step-icon">📊</div>
+                    <h3>Analyst Agent</h3>
+                    <p>分析内容质量，过滤重复</p>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step">
+                    <div class="step-icon">✅</div>
+                    <h3>Validator Agent</h3>
+                    <p>验证数据完整性</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Multi-Agent Form -->
+        <section class="form-section">
+            <h2>启动Multi-Agent工作流</h2>
+            <form id="ma-form" class="crawl-form">
+                <div class="form-group">
+                    <label for="ma-url">目标URL *</label>
+                    <input type="url" id="ma-url" name="url" placeholder="https://example.com" required
+                        class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="ma-keywords">关键词 (逗号分隔)</label>
+                    <input type="text" id="ma-keywords" name="keywords" placeholder="AI, 科技, 新闻" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ma-depth">爬取深度</label>
+                        <input type="number" id="ma-depth" name="depth" min="1" max="3" value="1" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ma-optimization" name="enable_optimization" checked>
+                            <span>启用优化</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ma-rag" name="enable_rag">
+                            <span>启用RAG</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="ma-submit-btn">
+                    启动工作流
+                </button>
+            </form>
+        </section>
+
+        <!-- Results -->
+        <section id="ma-results" class="results-section" style="display: none;">
+            <h2>工作流执行结果</h2>
+
+            <div id="ma-loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>正在执行Multi-Agent工作流，这可能需要一些时间...</p>
+            </div>
+
+            <div id="ma-results-content" style="display: none;">
+                <div class="results-summary">
+                    <div class="summary-card">
+                        <h3>执行状态</h3>
+                        <p><strong>状态:</strong> <span id="ma-status">-</span></p>
+                        <p><strong>URL:</strong> <span id="ma-url">-</span></p>
+                        <p><strong>耗时:</strong> <span id="ma-time">-</span></p>
+                    </div>
+                </div>
+
+                <div class="agent-results">
+                    <h3>各Agent结果</h3>
+                    <div id="agent-details"></div>
+                </div>
+            </div>
+
+            <div id="ma-error" class="error-content" style="display: none;">
+                <h3>❌ 执行错误</h3>
+                <pre id="ma-error-message"></pre>
+            </div>
+        </section>
+
+        <!-- Agent Info -->
+        <section class="info-section">
+            <h2>Agent详情</h2>
+            <div class="agent-cards">
+                <div class="agent-card">
+                    <h3>🔍 Explorer Agent</h3>
+                    <p><strong>职责:</strong> 网站结构探索</p>
+                    <ul>
+                        <li>检测JavaScript渲染</li>
+                        <li>发现分页机制</li>
+                        <li>识别反爬策略</li>
+                        <li>生成初始模式</li>
+                    </ul>
+                </div>
+
+                <div class="agent-card">
+                    <h3>⚡ Optimizer Agent</h3>
+                    <p><strong>职责:</strong> 模式优化</p>
+                    <ul>
+                        <li>RAG模式检索</li>
+                        <li>性能瓶颈分析</li>
+                        <li>A/B测试</li>
+                        <li>参数调优</li>
+                    </ul>
+                </div>
+
+                <div class="agent-card">
+                    <h3>📊 Analyst Agent</h3>
+                    <p><strong>职责:</strong> 内容分析</p>
+                    <ul>
+                        <li>质量评分</li>
+                        <li>关键词匹配</li>
+                        <li>重复检测</li>
+                        <li>垃圾过滤</li>
+                    </ul>
+                </div>
+
+                <div class="agent-card">
+                    <h3>✅ Validator Agent</h3>
+                    <p><strong>职责:</strong> 数据验证</p>
+                    <ul>
+                        <li>格式验证</li>
+                        <li>一致性检查</li>
+                        <li>完整性验证</li>
+                        <li>生成报告</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/multi-agent.js') }}"></script>
+</body>
+
+</html>
