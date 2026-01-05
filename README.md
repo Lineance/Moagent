@@ -11,6 +11,8 @@ A modular, extensible intelligent web content extraction system combining tradit
 
 </div>
 
+![项目主页](pictures\项目主页.png)
+
 ⚠️ WARNING: This project is in active development and is not suitable for production use. Bugs and breaking changes should be expected.
 
 ## Features
